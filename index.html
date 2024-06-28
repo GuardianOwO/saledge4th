@@ -5,13 +5,103 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Destiny2 Salvation's Edge 4th</title>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            gap: 20px;  
+        }
+        .game-container {
+            display: flex;
+            gap: 20px;
+        }
+        .area {
+            width: 200px;
+            height: 240px;
+            border: 2px solid #333;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #fff;
+        }
+        .area2 {
+            width: 200px;
+            height: 130px;
+            border: 2px solid #333;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #fff;
+        }
+        .main-shape {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+        .sub-shapes {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+        .sub-shape {
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .sub-shape:hover {
+            transform: scale(1.1);
+        }
+        .sub-shape.selected {
+            border: 3px solid red;
+        }
+        .circle {
+            border-radius: 50%;
+            background-color: blue;
+        }
+        .square {
+            background-color: red;
+        }
+        .triangle {
+            width: 0;
+            height: 0;
+            border-left: 25px solid transparent;
+            border-right: 25px solid transparent;
+            border-bottom: 50px solid green;
+            background-color: transparent !important;
+        }
+        .main-triangle {
+            width: 0;
+            height: 0;
+            border-left: 50px solid transparent;
+            border-right: 50px solid transparent;
+            border-bottom: 100px solid green;
+            background-color: transparent !important;
+        }
+        .instructions {
+            max-width: 800px;
+            margin: 10px 0;
+            padding: 5px;
+            background-color: #e6f3ff;
+            border: 1px solid #b8daff;
+            border-radius: 5px;
+        }
+
+
+
         .container {
             display: flex;
             justify-content: space-around;
             margin-bottom: 20px;
-        }
-        .area {
-            text-align: center;
         }
         .shape {
             width: 200px;
@@ -29,43 +119,182 @@
             margin: 5px;
             cursor: pointer;
         }
-        .circle {
+        .circle2 {
             border-radius: 50%;
             background-color: blue;
         }
-        .square {
-            background-color: green;
+        .square2 {
+            background-color: red;
         }
-        .triangle {
+        .triangle2 {
             width: 0;
             height: 0;
             border-left: 25px solid transparent;
             border-right: 25px solid transparent;
-            border-bottom: 50px solid rgba(214, 63, 8, 0.795);
+            border-bottom: 50px solid green;
         }
-        .selected {
-            border: 3px solid red;
+        .selected2 {
+            border: 3px solid rgb(255, 0, 200);
         }
+
+
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
-    <div class="container" id="shapes"></div>
+    <div class="instructions">
+        <h2>裏 - 仕様</h2>
+        <ol>
+            <li>ランダムに飛ばされたプレイヤーは平面図の図形を所持している</li>
+            <li>裏のプレイヤーは自分の図形以外を所持しなくてはならない</li>
+            <li>本番では２つ所持してしまった場合適当に送り付けてなかった事にする事</li>
+
+            <li>※このページを更新すると、図形の配置がランダムに変更されます。</li>
+        </ol>
+        <h3>使い方</h3>
+        <ul>
+            <li>小さな図形をクリックして送りたい先の大きな図形をクリックして下さい。</li>
+            <li>各図形は最大2つまでしか使用できません。</li>
+            <li>同じエリア内で同じ図形を3つ以上使用することはできません。</li>
+        </ul>        
+    </div>
+    <div class="game-container">
+        <div class="area" id="area1">
+            <div class="main-shape" id="main1"></div>
+            <div class="sub-shapes" id="sub1"></div>
+        </div>
+        <div class="area" id="area2">
+            <div class="main-shape" id="main2"></div>
+            <div class="sub-shapes" id="sub2"></div>
+        </div>
+        <div class="area" id="area3">
+            <div class="main-shape" id="main3"></div>
+            <div class="sub-shapes" id="sub3"></div>
+        </div>
+    </div>
+
+    <div class="instructions">
+        <h2>表 - 仕様</h2>
+        <ol>
+            <li>裏の所持している図形に合わせてそれ以外の図形で3D図を作ってね</li>
+            <li>例：裏が□＝表は〇と△の3D図</li>
+            <li>本番でも１つずつ動かしてね</li>
+        </ol>
+        <h3>使い方</h3>
+        <ul>
+            <li>選択したサブ図形が、クリックしたメイン図形のあるエリアに移動します。</li>
+            <li>各図形は最大2つまでしか使用できません。</li>
+            <li>同じエリア内で同じ図形を3つ以上使用することはできません。</li>
+        </ul>        
+    </div>
+    <div class="container" id="shapes2"></div>
     <div class="container" id="planes"></div>
 
     <script>
-        const shapes = ['球体', '三角錐', '四角柱', '円柱', '円錐', '四角錐'];
-        const planeTypes = ['circle', 'square', 'triangle'];
+        const shapes = ['circle', 'square', 'triangle'];
+        let selectedShape = null;
+        let selectedArea = null;
+
+        function createShape(shape, isMain = false) {
+            const div = document.createElement('div');
+            div.classList.add(shape);
+            if (isMain) {
+                div.classList.add('main-shape');
+                if (shape === 'triangle') div.classList.add('main-triangle');
+            } else {
+                div.classList.add('sub-shape');
+            }
+            return div;
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function initializeGame() {
+            const mainShapes = shuffleArray([...shapes]);
+            const subShapes = [];
+
+            for (let i = 0; i < 3; i++) {
+                document.getElementById(`main${i+1}`).innerHTML = '';
+                document.getElementById(`main${i+1}`).appendChild(createShape(mainShapes[i], true));
+
+                const areaShapes = [];
+                while (areaShapes.length < 2) {
+                    const shape = shapes[Math.floor(Math.random() * shapes.length)];
+                    if (subShapes.filter(s => s === shape).length < 2) {
+                        areaShapes.push(shape);
+                        subShapes.push(shape);
+                    }
+                }
+
+                const subArea = document.getElementById(`sub${i+1}`);
+                subArea.innerHTML = '';
+                areaShapes.forEach(shape => {
+                    const subShape = createShape(shape);
+                    subShape.addEventListener('click', () => selectShape(subShape, i+1));
+                    subArea.appendChild(subShape);
+                });
+            }
+        }
+
+        function selectShape(shape, areaNumber) {
+            if (selectedShape) {
+                selectedShape.classList.remove('selected');
+            }
+            shape.classList.add('selected');
+            selectedShape = shape;
+            selectedArea = areaNumber;
+        }
+
+        function moveShape(targetArea) {
+            if (!selectedShape || selectedArea === targetArea) return;
+
+            const sourceSubArea = document.getElementById(`sub${selectedArea}`);
+            const targetSubArea = document.getElementById(`sub${targetArea}`);
+
+            if (targetSubArea.children.length >= 6) {
+                alert('このエリアにはこれ以上図形を追加できません。');
+                return;
+            }
+
+            selectedShape.classList.remove('selected');
+            sourceSubArea.removeChild(selectedShape);
+            targetSubArea.appendChild(selectedShape);
+
+            selectedShape.addEventListener('click', () => selectShape(selectedShape, targetArea));
+
+            selectedShape = null;
+            selectedArea = null;
+        }
+
+        document.querySelectorAll('.main-shape').forEach((mainShape, index) => {
+            mainShape.addEventListener('click', () => moveShape(index + 1));
+        });
+
+        initializeGame();
+
+
+
+
+
+
+        const shapes2 = ['球体', '三角錐', '四角柱', '円柱', '円錐', '四角錐'];
+        const planeTypes = ['circle2', 'square2', 'triangle2'];
         const shapePatterns = {
-            'circle,circle': '球体',
-            'circle,square': '円柱',
-            'square,circle': '円柱',
-            'circle,triangle': '円錐',
-            'triangle,circle': '円錐',
-            'square,square': '四角柱',
-            'square,triangle': '四角錐',
-            'triangle,square': '四角錐',
-            'triangle,triangle': '三角錐'
+            'circle2,circle2': '球体',
+            'circle2,square2': '円柱',
+            'circle2,triangle2': '円錐',            
+            'square2,circle2': '円柱',
+            'square2,square2': '四角柱',
+            'square2,triangle2': '四角錐',
+            'triangle2,circle2': '円錐',            
+            'triangle2,square2': '四角錐',
+            'triangle2,triangle2': '三角錐'
         };
 
         let currentPlanes = [];
@@ -75,7 +304,7 @@
 
         function initializePlanes() {
             currentPlanes = [];
-            const planeCount = { circle: 0, square: 0, triangle: 0 };
+            const planeCount = { circle2: 0, square2: 0, triangle2: 0 };
 
             for (let i = 0; i < 6; i++) {
                 let randomPlane;
@@ -97,7 +326,7 @@
 
             for (let i = 0; i < 3; i++) {
                 const area = document.createElement('div');
-                area.className = 'area';
+                area.className = 'area2';
 
                 for (let j = 0; j < 2; j++) {
                     const plane = document.createElement('div');
@@ -111,7 +340,7 @@
         }
 
         function renderShapes() {
-            const shapesContainer = document.getElementById('shapes');
+            const shapesContainer = document.getElementById('shapes2');
             shapesContainer.innerHTML = '';
 
             for (let i = 0; i < 3; i++) {
@@ -150,8 +379,6 @@
             }
         }
 
-
-
         const shapeColors = {
             '球体': 0xff0000,    // 赤
             '三角錐': 0x00ff00,  // 緑
@@ -161,7 +388,7 @@
             '四角錐': 0x00ffff   // シアン
         };
 
-        function createShape(containerId, shapeType) {
+        function createShape2(containerId, shapeType) {
             const container = document.getElementById(containerId);
             
             const scene = new THREE.Scene();
@@ -215,7 +442,7 @@
         }
 
         function renderShapes() {
-            const shapesContainer = document.getElementById('shapes');
+            const shapesContainer = document.getElementById('shapes2');
             shapesContainer.innerHTML = '';
 
             for (let i = 0; i < 3; i++) {
@@ -225,12 +452,11 @@
                 shapesContainer.appendChild(shape);
 
                 const shapeType = shapePatterns[`${currentPlanes[i * 2]},${currentPlanes[i * 2 + 1]}`];
-                createShape(`shape-${i}`, shapeType);
+                createShape2(`shape-${i}`, shapeType);
             }
         }
         
-
-        initializePlanes();
+         initializePlanes();
     </script>
 </body>
 </html>
