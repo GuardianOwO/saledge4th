@@ -88,15 +88,23 @@
             background-color: transparent !important;
         }
         .instructions {
-            max-width: 800px;
-            margin: 10px 0;
-            padding: 5px;
-            background-color: #e6f3ff;
-            border: 1px solid #b8daff;
-            border-radius: 5px;
-        }
+    cursor: pointer;
+    max-width: 800px;
+    margin: 10px 0;
+    padding: 5px;
+    background-color: #e6f3ff;
+    border: 1px solid #b8daff;
+    border-radius: 5px;
+}
 
+.instructions > div {
+    display: block; /* 初期状態で表示 */
+    margin-top: 10px; /* クリック可能なヘッダーと内容の間にスペースを追加 */
+}
 
+.instructions > h2 {
+    margin: 0; /* ヘッダーの上下のマージンを削除 */
+}
 
         .container {
             display: flex;
@@ -139,6 +147,7 @@
 
 
     </style>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
@@ -154,8 +163,6 @@
         <h3>使い方</h3>
         <ul>
             <li>小さな図形をクリックして送りたい先の大きな図形をクリックして下さい。</li>
-            <li>各図形は最大2つまでしか使用できません。</li>
-            <li>同じエリア内で同じ図形を3つ以上使用することはできません。</li>
         </ul>        
     </div>
     <div class="game-container">
@@ -175,23 +182,41 @@
 
     <div class="instructions">
         <h2>表 - 仕様</h2>
+        <div class="content">
         <ol>
+            <li>１つ目クリックと２つ目クリックした図形が入れ替わります。</li>
+            <li>前回の２つ目にクリックしたエリアは次の１つ目では選択できません</li>     
             <li>裏の所持している図形に合わせてそれ以外の図形で3D図を作ってね</li>
             <li>例：裏が□＝表は〇と△の3D図</li>
-            <li>本番でも１つずつ動かしてね</li>
-            <li>細かい仕様は各自で補足説明して下さい</li>            
+            <li>本番でも１つずつ動かしてね</li>   
+            <li>細かい仕様は各自で補足説明して下さい</li>                  
         </ol>
         <h3>使い方</h3>
         <ul>
-            <li>選択したサブ図形が、クリックしたメイン図形のあるエリアに移動します。</li>
-            <li>各図形は最大2つまでしか使用できません。</li>
-            <li>同じエリア内で同じ図形を3つ以上使用することはできません。</li>
-        </ul>        
+            <li>平面図の図形をクリックして別エリアの図形をクリックして下さい。</li>          
+        </ul>  
+        </div>    
     </div>
     <div class="container" id="shapes2"></div>
     <div class="container" id="planes"></div>
 
     <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const instructionsElements = document.querySelectorAll('.instructions');
+
+        instructionsElements.forEach(function(element) {
+            const header = element.querySelector('instructions');
+            const content = element.querySelector('.content');
+        
+            if (header && content) {
+                header.addEventListener('click', function(event) {
+                    event.stopPropagation(); // イベントの伝播を停止
+                    content.style.display = content.style.display === 'none' ? 'block' : 'none';
+                });
+            }
+        });
+    });
+
         const shapes = ['circle', 'square', 'triangle'];
         let selectedShape = null;
         let selectedArea = null;
