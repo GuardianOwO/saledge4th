@@ -102,25 +102,13 @@
         }
 
         .instructions {
-            /* cursor: pointer; */
+            cursor: pointer;
             max-width: 800px;
             margin: 10px 0;
             padding: 5px;
             background-color: #e6f3ff;
             border: 1px solid #b8daff;
             border-radius: 5px;
-        }
-
-        .instructions>div {
-            display: block;
-            /* 初期状態で表示 */
-            margin-top: 10px;
-            /* クリック可能なヘッダーと内容の間にスペースを追加 */
-        }
-
-        .instructions>h2 {
-            margin: 0;
-            /* ヘッダーの上下のマージンを削除 */
         }
 
         .container {
@@ -181,6 +169,7 @@
             <li>本番では２つ所持してしまった場合適当に送り付けてなかった事にする事</li>
             <li>細かい仕様は各自で補足説明して下さい</li>
             <li>※このページを更新すると、図形の配置がランダムに変更されます。</li>
+            <li>※クリックしたら非表示にできます</li>
         </ol>
         <h3>使い方</h3>
         <ul>
@@ -212,6 +201,7 @@
                 <li>例：裏が□、△、〇　＝　表は〇△、□〇、△□の3D図を作る</li>
                 <li>本番でも１つずつ動かしてね</li>
                 <li>細かい仕様は各自で補足説明して下さい</li>
+                <li>※クリックしたら非表示にできます</li>
             </ol>
             <h3>使い方</h3>
             <ul>
@@ -223,19 +213,9 @@
     <div class="container" id="planes"></div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const instructionsElements = document.querySelectorAll('.instructions');
-
-            instructionsElements.forEach(function (element) {
-                const header = element.querySelector('instructions');
-                const content = element.querySelector('.content');
-
-                if (header && content) {
-                    header.addEventListener('click', function (event) {
-                        event.stopPropagation(); // イベントの伝播を停止
-                        content.style.display = content.style.display === 'none' ? 'block' : 'none';
-                    });
-                }
+        document.querySelectorAll('.instructions').forEach(instruction => {
+            instruction.addEventListener('click', () => {
+                instruction.style.display = 'none';
             });
         });
 
