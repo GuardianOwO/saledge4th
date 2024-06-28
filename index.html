@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,12 +15,14 @@
             min-height: 100vh;
             margin: 0;
             background-color: #f0f0f0;
-            gap: 20px;  
+            gap: 20px;
         }
+
         .game-container {
             display: flex;
             gap: 20px;
         }
+
         .area {
             width: 200px;
             height: 240px;
@@ -30,6 +33,7 @@
             align-items: center;
             background-color: #fff;
         }
+
         .area2 {
             width: 200px;
             height: 130px;
@@ -40,37 +44,45 @@
             align-items: center;
             background-color: #fff;
         }
+
         .main-shape {
             width: 100px;
             height: 100px;
             margin-bottom: 20px;
             cursor: pointer;
         }
+
         .sub-shapes {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
             gap: 10px;
         }
+
         .sub-shape {
             width: 50px;
             height: 50px;
             cursor: pointer;
             transition: all 0.3s ease;
         }
+
         .sub-shape:hover {
             transform: scale(1.1);
         }
+
         .sub-shape.selected {
             border: 3px solid red;
         }
+
         .circle {
             border-radius: 50%;
             background-color: blue;
         }
+
         .square {
             background-color: red;
         }
+
         .triangle {
             width: 0;
             height: 0;
@@ -79,6 +91,7 @@
             border-bottom: 50px solid green;
             background-color: transparent !important;
         }
+
         .main-triangle {
             width: 0;
             height: 0;
@@ -87,30 +100,35 @@
             border-bottom: 100px solid green;
             background-color: transparent !important;
         }
+
         .instructions {
-    /* cursor: pointer; */
-    max-width: 800px;
-    margin: 10px 0;
-    padding: 5px;
-    background-color: #e6f3ff;
-    border: 1px solid #b8daff;
-    border-radius: 5px;
-}
+            /* cursor: pointer; */
+            max-width: 800px;
+            margin: 10px 0;
+            padding: 5px;
+            background-color: #e6f3ff;
+            border: 1px solid #b8daff;
+            border-radius: 5px;
+        }
 
-.instructions > div {
-    display: block; /* 初期状態で表示 */
-    margin-top: 10px; /* クリック可能なヘッダーと内容の間にスペースを追加 */
-}
+        .instructions>div {
+            display: block;
+            /* 初期状態で表示 */
+            margin-top: 10px;
+            /* クリック可能なヘッダーと内容の間にスペースを追加 */
+        }
 
-.instructions > h2 {
-    margin: 0; /* ヘッダーの上下のマージンを削除 */
-}
+        .instructions>h2 {
+            margin: 0;
+            /* ヘッダーの上下のマージンを削除 */
+        }
 
         .container {
             display: flex;
             justify-content: space-around;
             margin-bottom: 20px;
         }
+
         .shape {
             width: 200px;
             height: 200px;
@@ -120,6 +138,7 @@
             align-items: center;
             justify-content: center;
         }
+
         .plane {
             width: 50px;
             height: 50px;
@@ -127,13 +146,16 @@
             margin: 5px;
             cursor: pointer;
         }
+
         .circle2 {
             border-radius: 50%;
             background-color: blue;
         }
+
         .square2 {
             background-color: red;
         }
+
         .triangle2 {
             width: 0;
             height: 0;
@@ -141,15 +163,15 @@
             border-right: 25px solid transparent;
             border-bottom: 50px solid green;
         }
+
         .selected2 {
             border: 3px solid rgb(255, 0, 200);
         }
-
-
     </style>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
+
 <body>
     <div class="instructions">
         <h2>裏 - 仕様</h2>
@@ -163,7 +185,7 @@
         <h3>使い方</h3>
         <ul>
             <li>小さな図形をクリックして送りたい先の大きな図形をクリックして下さい。</li>
-        </ul>        
+        </ul>
     </div>
     <div class="game-container">
         <div class="area" id="area1">
@@ -183,39 +205,39 @@
     <div class="instructions">
         <h2>表 - 仕様</h2>
         <div class="content">
-        <ol>
-            <li>１つ目クリックと２つ目クリックした図形が入れ替わります。</li>
-            <li>前回の２つ目にクリックしたエリアは次の１つ目では選択できません</li>     
-            <li>裏の所持している図形に合わせてそれ以外の図形で3D図を作ってね</li>
-            <li>例：裏が□＝表は〇と△の3D図</li>
-            <li>本番でも１つずつ動かしてね</li>   
-            <li>細かい仕様は各自で補足説明して下さい</li>                  
-        </ol>
-        <h3>使い方</h3>
-        <ul>
-            <li>平面図の図形をクリックして別エリアの図形をクリックして下さい。</li>          
-        </ul>  
-        </div>    
+            <ol>
+                <li>１つ目クリックと２つ目クリックした図形が入れ替わります。</li>
+                <li>前回の２つ目にクリックしたエリアは次の１つ目では選択できません</li>
+                <li>裏の所持している図形に合わせてそれ以外の図形で3D図を作ってね</li>
+                <li>例：裏が□＝表は〇と△の3D図</li>
+                <li>本番でも１つずつ動かしてね</li>
+                <li>細かい仕様は各自で補足説明して下さい</li>
+            </ol>
+            <h3>使い方</h3>
+            <ul>
+                <li>平面図の図形をクリックして別エリアの図形をクリックして下さい。</li>
+            </ul>
+        </div>
     </div>
     <div class="container" id="shapes2"></div>
     <div class="container" id="planes"></div>
 
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const instructionsElements = document.querySelectorAll('.instructions');
+        document.addEventListener('DOMContentLoaded', function () {
+            const instructionsElements = document.querySelectorAll('.instructions');
 
-        instructionsElements.forEach(function(element) {
-            const header = element.querySelector('instructions');
-            const content = element.querySelector('.content');
-        
-            if (header && content) {
-                header.addEventListener('click', function(event) {
-                    event.stopPropagation(); // イベントの伝播を停止
-                    content.style.display = content.style.display === 'none' ? 'block' : 'none';
-                });
-            }
+            instructionsElements.forEach(function (element) {
+                const header = element.querySelector('instructions');
+                const content = element.querySelector('.content');
+
+                if (header && content) {
+                    header.addEventListener('click', function (event) {
+                        event.stopPropagation(); // イベントの伝播を停止
+                        content.style.display = content.style.display === 'none' ? 'block' : 'none';
+                    });
+                }
+            });
         });
-    });
 
         const shapes = ['circle', 'square', 'triangle'];
         let selectedShape = null;
@@ -246,8 +268,8 @@
             const subShapes = [];
 
             for (let i = 0; i < 3; i++) {
-                document.getElementById(`main${i+1}`).innerHTML = '';
-                document.getElementById(`main${i+1}`).appendChild(createShape(mainShapes[i], true));
+                document.getElementById(`main${i + 1}`).innerHTML = '';
+                document.getElementById(`main${i + 1}`).appendChild(createShape(mainShapes[i], true));
 
                 const areaShapes = [];
                 while (areaShapes.length < 2) {
@@ -258,11 +280,11 @@
                     }
                 }
 
-                const subArea = document.getElementById(`sub${i+1}`);
+                const subArea = document.getElementById(`sub${i + 1}`);
                 subArea.innerHTML = '';
                 areaShapes.forEach(shape => {
                     const subShape = createShape(shape);
-                    subShape.addEventListener('click', () => selectShape(subShape, i+1));
+                    subShape.addEventListener('click', () => selectShape(subShape, i + 1));
                     subArea.appendChild(subShape);
                 });
             }
@@ -314,11 +336,11 @@
         const shapePatterns = {
             'circle2,circle2': '球体',
             'circle2,square2': '円柱',
-            'circle2,triangle2': '円錐',            
+            'circle2,triangle2': '円錐',
             'square2,circle2': '円柱',
             'square2,square2': '四角柱',
             'square2,triangle2': '四角錐',
-            'triangle2,circle2': '円錐',            
+            'triangle2,circle2': '円錐',
             'triangle2,square2': '四角錐',
             'triangle2,triangle2': '三角錐'
         };
@@ -337,7 +359,7 @@
                 do {
                     randomPlane = planeTypes[Math.floor(Math.random() * 3)];
                 } while (planeCount[randomPlane] >= 2);
-                
+
                 currentPlanes.push(randomPlane);
                 planeCount[randomPlane]++;
             }
@@ -416,7 +438,7 @@
 
         function createShape2(containerId, shapeType) {
             const container = document.getElementById(containerId);
-            
+
             const scene = new THREE.Scene();
             scene.background = new THREE.Color(0xcccccc); // 灰色の背景
             const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
@@ -481,8 +503,9 @@
                 createShape2(`shape-${i}`, shapeType);
             }
         }
-        
-         initializePlanes();
+
+        initializePlanes();
     </script>
 </body>
+
 </html>
