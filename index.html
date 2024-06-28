@@ -151,50 +151,6 @@
         }
 
 
-        function createRotatingPyramid(containerId) {
-            const container = document.getElementById(containerId);
-            
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
-            const renderer = new THREE.WebGLRenderer();
-            renderer.setSize(200, 200);
-            container.appendChild(renderer.domElement);
-
-            const geometry = new THREE.ConeGeometry(1, 1.5, 4);
-            const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
-            const pyramid = new THREE.Mesh(geometry, material);
-            scene.add(pyramid);
-
-            camera.position.z = 3;
-
-            function animate() {
-                requestAnimationFrame(animate);
-                pyramid.rotation.x += 0.01;
-                pyramid.rotation.y += 0.01;
-                renderer.render(scene, camera);
-            }
-            animate();
-        }
-
-        function renderShapes() {
-            const shapesContainer = document.getElementById('shapes');
-            shapesContainer.innerHTML = '';
-
-            for (let i = 0; i < 3; i++) {
-                const shape = document.createElement('div');
-                shape.className = 'shape';
-                shape.id = `shape-${i}`;
-                shapesContainer.appendChild(shape);
-
-                const shapeType = shapePatterns[`${currentPlanes[i * 2]},${currentPlanes[i * 2 + 1]}`];
-                if (shapeType === '四角錐') {
-                    createRotatingPyramid(`shape-${i}`);
-                } else {
-                    shape.textContent = shapeType;
-                }
-            }
-        }
-
 
         const shapeColors = {
             '球体': 0xff0000,    // 赤
