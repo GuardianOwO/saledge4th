@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>図形パターンゲーム</title>
+    <style>
+        .container {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+        .area {
+            text-align: center;
+        }
+        .shape {
+            width: 200px;
+            height: 200px;
+            margin: 10px auto;
+            background-color: #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .plane {
+            width: 50px;
+            height: 50px;
+            display: inline-block;
+            margin: 5px;
+            cursor: pointer;
+        }
+        .circle {
+            border-radius: 50%;
+            background-color: blue;
+        }
+        .square {
+            background-color: green;
+        }
+        .triangle {
+            width: 0;
+            height: 0;
+            border-left: 25px solid transparent;
+            border-right: 25px solid transparent;
+            border-bottom: 50px solid rgba(214, 63, 8, 0.795);
+        }
+        .selected {
+            border: 3px solid red;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+    <div class="container" id="shapes"></div>
+    <div class="container" id="planes"></div>
+
+    <script>
+        const shapes = ['球体', '三角錐', '四角柱', '円柱', '円錐', '四角錐'];
+        const planeTypes = ['circle', 'square', 'triangle'];
+        const shapePatterns = {
+            'circle,circle': '球体',
+            'circle,square': '円柱',
+            'square,circle': '円柱',
+            'circle,triangle': '円錐',
+            'triangle,circle': '円錐',
+            'square,square': '四角柱',
+            'square,triangle': '四角錐',
+            'triangle,square': '四角錐',
+            'triangle,triangle': '三角錐'
+        };
+
+        let currentPlanes = [];
+        let selectedPlane = null;
+        let lastSelectedArea = null;
+        let clickCount = 0;
+
+        function initializePlanes() {
+            currentPlanes = [];
+            const planeCount = { circle: 0, square: 0, triangle: 0 };
+
+            for (let i = 0; i < 6; i++) {
+                let randomPlane;
+                do {
+                    randomPlane = planeTypes[Math.floor(Math.random() * 3)];
+                } while (planeCount[randomPlane] >= 2);
+                
+                currentPlanes.push(randomPlane);
+                planeCount[randomPlane]++;
+            }
+
+            renderPlanes();
+            renderShapes();
+        }
+
+        function renderPlanes() {
+            const planesContainer = document.getElementById('planes');
+            planesContainer.innerHTML = '';
+
+            for (let i = 0; i < 3; i++) {
+                const area = document.createElement('div');
+                area.className = 'area';
+
+                for (let j = 0; j < 2; j++) {
+                    const plane = document.createElement('div');
+                    plane.className = `plane ${currentPlanes[i * 2 + j]}`;
+                    plane.onclick = () => selectPlane(i * 2 + j);
+                    area.appendChild(plane);
+                }
+
+                planesContainer.appendChild(area);
+            }
+        }
+
+        function renderShapes() {
+            const shapesContainer = document.getElementById('shapes');
+            shapesContainer.innerHTML = '';
+
+            for (let i = 0; i < 3; i++) {
+                const shape = document.createElement('div');
+                shape.className = 'shape';
+                shape.textContent = shapePatterns[`${currentPlanes[i * 2]},${currentPlanes[i * 2 + 1]}`];
+                shapesContainer.appendChild(shape);
+            }
+        }
+
+        function selectPlane(index) {
+            const currentArea = Math.floor(index / 2);
+
+            if (clickCount === 0) {
+                if (currentArea === lastSelectedArea) {
+                    return;
+                }
+                selectedPlane = index;
+                document.getElementsByClassName('plane')[index].classList.add('selected');
+                clickCount++;
+            } else if (clickCount === 1) {
+                if (currentArea === Math.floor(selectedPlane / 2)) {
+                    return;
+                }
+                const temp = currentPlanes[selectedPlane];
+                currentPlanes[selectedPlane] = currentPlanes[index];
+                currentPlanes[index] = temp;
+
+                document.getElementsByClassName('plane')[selectedPlane].classList.remove('selected');
+                lastSelectedArea = currentArea;
+                selectedPlane = null;
+                clickCount = 0;
+
+                renderPlanes();
+                renderShapes();
+            }
+        }
+
+
+        function createRotatingPyramid(containerId) {
+            const container = document.getElementById(containerId);
+            
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer();
+            renderer.setSize(200, 200);
+            container.appendChild(renderer.domElement);
+
+            const geometry = new THREE.ConeGeometry(1, 1.5, 4);
+            const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+            const pyramid = new THREE.Mesh(geometry, material);
+            scene.add(pyramid);
+
+            camera.position.z = 3;
+
+            function animate() {
+                requestAnimationFrame(animate);
+                pyramid.rotation.x += 0.01;
+                pyramid.rotation.y += 0.01;
+                renderer.render(scene, camera);
+            }
+            animate();
+        }
+
+        function renderShapes() {
+            const shapesContainer = document.getElementById('shapes');
+            shapesContainer.innerHTML = '';
+
+            for (let i = 0; i < 3; i++) {
+                const shape = document.createElement('div');
+                shape.className = 'shape';
+                shape.id = `shape-${i}`;
+                shapesContainer.appendChild(shape);
+
+                const shapeType = shapePatterns[`${currentPlanes[i * 2]},${currentPlanes[i * 2 + 1]}`];
+                if (shapeType === '四角錐') {
+                    createRotatingPyramid(`shape-${i}`);
+                } else {
+                    shape.textContent = shapeType;
+                }
+            }
+        }
+
+
+        const shapeColors = {
+            '球体': 0xff0000,    // 赤
+            '三角錐': 0x00ff00,  // 緑
+            '四角柱': 0x0000ff,  // 青
+            '円柱': 0xffff00,    // 黄
+            '円錐': 0xff00ff,    // マゼンタ
+            '四角錐': 0x00ffff   // シアン
+        };
+
+        function createShape(containerId, shapeType) {
+            const container = document.getElementById(containerId);
+            
+            const scene = new THREE.Scene();
+            scene.background = new THREE.Color(0xcccccc); // 灰色の背景
+            const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(200, 200);
+            container.appendChild(renderer.domElement);
+
+            let geometry, material, shape;
+            const color = shapeColors[shapeType];
+
+            switch (shapeType) {
+                case '球体':
+                    geometry = new THREE.SphereGeometry(1, 32, 32);
+                    break;
+                case '三角錐':
+                    geometry = new THREE.ConeGeometry(1, 1.5, 3);
+                    break;
+                case '四角柱':
+                    geometry = new THREE.BoxGeometry(1, 1.5, 1);
+                    break;
+                case '円柱':
+                    geometry = new THREE.CylinderGeometry(0.5, 0.5, 1.5, 32);
+                    break;
+                case '円錐':
+                    geometry = new THREE.ConeGeometry(1, 1.5, 32);
+                    break;
+                case '四角錐':
+                    geometry = new THREE.ConeGeometry(1, 1.5, 4);
+                    break;
+            }
+
+            material = new THREE.MeshPhongMaterial({ color: color });
+            shape = new THREE.Mesh(geometry, material);
+            scene.add(shape);
+
+            const light = new THREE.PointLight(0xffffff, 1, 100);
+            light.position.set(0, 0, 10);
+            scene.add(light);
+
+            camera.position.z = 3;
+
+            function animate() {
+                requestAnimationFrame(animate);
+                shape.rotation.x += 0.01;
+                shape.rotation.y += 0.01;
+                renderer.render(scene, camera);
+            }
+            animate();
+        }
+
+        function renderShapes() {
+            const shapesContainer = document.getElementById('shapes');
+            shapesContainer.innerHTML = '';
+
+            for (let i = 0; i < 3; i++) {
+                const shape = document.createElement('div');
+                shape.className = 'shape';
+                shape.id = `shape-${i}`;
+                shapesContainer.appendChild(shape);
+
+                const shapeType = shapePatterns[`${currentPlanes[i * 2]},${currentPlanes[i * 2 + 1]}`];
+                createShape(`shape-${i}`, shapeType);
+            }
+        }
+        
+
+        initializePlanes();
+    </script>
+</body>
+</html>
