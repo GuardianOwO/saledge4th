@@ -76,7 +76,7 @@
 
         .circle {
             border-radius: 50%;
-            background-color: blue;
+            background-color: rgb(255, 196, 0);
         }
 
         .square {
@@ -116,7 +116,7 @@
         }
 
         .highlight {
-            background-color: yellow;
+            background-color: rgb(0, 255, 242);
         }
 
         .shape {
@@ -179,7 +179,7 @@
             <li>裏のプレイヤーは自分の図形以外を所持しなくてはならない</li>
             <li>本番では２つ所持してしまった場合適当に送り付けてなかった事にする事</li>
             <li>細かい仕様は各自で補足説明して下さい</li>
-            <li>背景が黄色になったら完成です</li>
+            <li>背景が水色になったら完成です</li>
         </ol>
         <h3>使い方</h3>
         <ul>
@@ -441,12 +441,12 @@
         }
 
         const shapeColors = {
-            '球体': 0xffff00,    // 黄
+            '球体': 0x0000ff,   // 青
             '三角錐': 0xff00ff,  // マゼンタ
             '四角柱': 0x00ffff,  // シアン
             '円柱': 0x00B400,    // 緑
             '円錐': 0xff0000,    // 赤
-            '四角錐': 0x0000ff   // 青
+            '四角錐': 0xffff00    // 黄
         };
 
         function createShape2(containerId, shapeType) {
