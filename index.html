@@ -86,19 +86,17 @@
         .triangle {
             width: 0;
             height: 0;
-            border-left: 25px solid transparent;
-            border-right: 25px solid transparent;
-            border-bottom: 50px solid green;
-            background-color: transparent !important;
-        }
-
-        .main-triangle {
-            width: 0;
-            height: 0;
             border-left: 50px solid transparent;
             border-right: 50px solid transparent;
             border-bottom: 100px solid green;
-            background-color: transparent !important;
+        }
+
+        .sub-shape.triangle {
+            width: 0;
+            height: 0;
+            border-left: 25px solid transparent;
+            border-right: 25px solid transparent;
+            border-bottom: 50px solid green;
         }
 
         .instructions {
@@ -115,6 +113,10 @@
             display: flex;
             justify-content: space-around;
             margin-bottom: 20px;
+        }
+
+        .highlight {
+            background-color: yellow;
         }
 
         .shape {
@@ -152,6 +154,15 @@
             border-bottom: 50px solid green;
         }
 
+        .selected {
+            border: 3px solid red;
+        }
+
+        .sub-shape.selected {
+            transform: scale(0.1);
+        }
+
+
         .selected2 {
             border: 3px solid rgb(255, 0, 200);
         }
@@ -168,26 +179,27 @@
             <li>裏のプレイヤーは自分の図形以外を所持しなくてはならない</li>
             <li>本番では２つ所持してしまった場合適当に送り付けてなかった事にする事</li>
             <li>細かい仕様は各自で補足説明して下さい</li>
-            <li>※このページを更新すると、図形の配置がランダムに変更されます。</li>
-            <li>※クリックしたら非表示にできます</li>
+            <li>背景が黄色になったら完成です</li>
         </ol>
         <h3>使い方</h3>
         <ul>
             <li>小さな図形をクリックして送りたい先の大きな図形をクリックして下さい。</li>
+            <li>※このページを更新すると、図形の配置がランダムに変更されます。</li>
+            <li>※クリックしたら非表示にできます</li>
         </ul>
     </div>
     <div class="game-container">
-        <div class="area" id="area1">
-            <div class="main-shape" id="main1"></div>
-            <div class="sub-shapes" id="sub1"></div>
+        <div id="area-left" class="area">
+            <div class="main-shape"></div>
+            <div class="sub-shapes"></div>
         </div>
-        <div class="area" id="area2">
-            <div class="main-shape" id="main2"></div>
-            <div class="sub-shapes" id="sub2"></div>
+        <div id="area-center" class="area">
+            <div class="main-shape"></div>
+            <div class="sub-shapes"></div>
         </div>
-        <div class="area" id="area3">
-            <div class="main-shape" id="main3"></div>
-            <div class="sub-shapes" id="sub3"></div>
+        <div id="area-right" class="area">
+            <div class="main-shape"></div>
+            <div class="sub-shapes"></div>
         </div>
     </div>
 
@@ -220,91 +232,115 @@
         });
 
         const shapes = ['circle', 'square', 'triangle'];
+        const areas = ['left', 'center', 'right'];
         let selectedShape = null;
-        let selectedArea = null;
 
-        function createShape(shape, isMain = false) {
-            const div = document.createElement('div');
-            div.classList.add(shape);
-            if (isMain) {
-                div.classList.add('main-shape');
-                if (shape === 'triangle') div.classList.add('main-triangle');
-            } else {
-                div.classList.add('sub-shape');
-            }
-            return div;
+        function getRandomMainShapes() {
+            const shuffled = shapes.sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, 3);
         }
 
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
-        }
-
-        function initializeGame() {
-            const mainShapes = shuffleArray([...shapes]);
+        function getRandomSubShapes() {
             const subShapes = [];
+            const shapeCounts = { circle: 0, square: 0, triangle: 0 };
 
             for (let i = 0; i < 3; i++) {
-                document.getElementById(`main${i + 1}`).innerHTML = '';
-                document.getElementById(`main${i + 1}`).appendChild(createShape(mainShapes[i], true));
-
                 const areaShapes = [];
                 while (areaShapes.length < 2) {
                     const shape = shapes[Math.floor(Math.random() * shapes.length)];
-                    if (subShapes.filter(s => s === shape).length < 2) {
+                    if (shapeCounts[shape] < 2) {
                         areaShapes.push(shape);
-                        subShapes.push(shape);
+                        shapeCounts[shape]++;
                     }
                 }
-
-                const subArea = document.getElementById(`sub${i + 1}`);
-                subArea.innerHTML = '';
-                areaShapes.forEach(shape => {
-                    const subShape = createShape(shape);
-                    subShape.addEventListener('click', () => selectShape(subShape, i + 1));
-                    subArea.appendChild(subShape);
-                });
+                subShapes.push(areaShapes);
             }
+
+            return subShapes;
         }
 
-        function selectShape(shape, areaNumber) {
+        function selectShape(shape, area) {
             if (selectedShape) {
                 selectedShape.classList.remove('selected');
             }
-            shape.classList.add('selected');
             selectedShape = shape;
-            selectedArea = areaNumber;
+            shape.classList.add('selected');
         }
 
-        function moveShape(targetArea) {
-            if (!selectedShape || selectedArea === targetArea) return;
+        function initializeGame() {
+            const mainShapes = getRandomMainShapes();
+            const subShapes = getRandomSubShapes();
 
-            const sourceSubArea = document.getElementById(`sub${selectedArea}`);
-            const targetSubArea = document.getElementById(`sub${targetArea}`);
+            areas.forEach((area, index) => {
+                const mainShapeElement = document.querySelector(`#area-${area} .main-shape`);
+                mainShapeElement.className = `main-shape ${mainShapes[index]}`;
 
-            if (targetSubArea.children.length >= 6) {
-                alert('このエリアにはこれ以上図形を追加できません。');
-                return;
-            }
+                const subShapesElement = document.querySelector(`#area-${area} .sub-shapes`);
+                subShapesElement.innerHTML = '';
+                subShapes[index].forEach(shape => {
+                    const subShape = document.createElement('div');
+                    subShape.className = `sub-shape ${shape}`;
+                    subShape.addEventListener('click', () => selectShape(subShape, area));
+                    subShapesElement.appendChild(subShape);
+                });
+            });
+
+            document.querySelectorAll('.main-shape').forEach(shape => {
+                shape.addEventListener('click', () => moveSelectedShape(shape.parentElement.id.split('-')[1]));
+            });
+
+            checkAllAreas();
+        }
+
+        function moveSelectedShape(targetArea) {
+            if (!selectedShape) return;
+
+            const sourceArea = selectedShape.parentElement.parentElement.id.split('-')[1];
+            if (sourceArea === targetArea) return;
+
+            const targetSubShapes = document.querySelector(`#area-${targetArea} .sub-shapes`);
+            if (targetSubShapes.children.length >= 6) return;
 
             selectedShape.classList.remove('selected');
-            sourceSubArea.removeChild(selectedShape);
-            targetSubArea.appendChild(selectedShape);
-
-            selectedShape.addEventListener('click', () => selectShape(selectedShape, targetArea));
-
+            targetSubShapes.appendChild(selectedShape);
             selectedShape = null;
-            selectedArea = null;
+
+            checkAllAreas();
         }
 
-        document.querySelectorAll('.main-shape').forEach((mainShape, index) => {
-            mainShape.addEventListener('click', () => moveShape(index + 1));
-        });
+        function checkAllAreas() {
+            areas.forEach(area => {
+                checkArea(area);
+            });
+        }
+
+        function checkArea(area) {
+            const areaElement = document.getElementById(`area-${area}`);
+            const mainShape = areaElement.querySelector('.main-shape').className.split(' ')[1];
+            const subShapes = Array.from(areaElement.querySelectorAll('.sub-shape')).map(el => el.className.split(' ')[1]);
+
+            const allShapes = [mainShape, ...subShapes];
+            const uniqueShapes = new Set(allShapes);
+            const uniqueSubShapes = new Set(subShapes);
+
+            if (uniqueShapes.size === allShapes.length && uniqueSubShapes.size === 2) {
+                areaElement.classList.add('highlight');
+            } else {
+                areaElement.classList.remove('highlight');
+            }
+        }
 
         initializeGame();
+
+
+
+
+
+
+
+
+
+
 
 
 
