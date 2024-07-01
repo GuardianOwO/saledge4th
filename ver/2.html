@@ -1,0 +1,543 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Destiny2 Salvation's Edge 4th</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            gap: 20px;
+        }
+
+        .game-container {
+            display: flex;
+            gap: 20px;
+        }
+
+        .area {
+            width: 200px;
+            height: 240px;
+            border: 2px solid #333;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #fff;
+        }
+
+        .area2 {
+            width: 200px;
+            height: 130px;
+            border: 2px solid #333;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #fff;
+        }
+
+        .main-shape {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+
+        .sub-shapes {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .sub-shape {
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .sub-shape:hover {
+            transform: scale(1.1);
+        }
+
+        .sub-shape.selected {
+            border: 3px solid red;
+        }
+
+        .circle {
+            border-radius: 50%;
+            background-color: rgb(255, 196, 0);
+        }
+
+        .square {
+            background-color: red;
+        }
+
+        .triangle {
+            width: 0;
+            height: 0;
+            border-left: 50px solid transparent;
+            border-right: 50px solid transparent;
+            border-bottom: 100px solid green;
+        }
+
+        .sub-shape.triangle {
+            width: 0;
+            height: 0;
+            border-left: 25px solid transparent;
+            border-right: 25px solid transparent;
+            border-bottom: 50px solid green;
+        }
+
+        .instructions {
+            cursor: pointer;
+            max-width: 800px;
+            margin: 10px 0;
+            padding: 5px;
+            background-color: #e6f3ff;
+            border: 1px solid #b8daff;
+            border-radius: 5px;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+
+        .highlight {
+            background-color: rgb(0, 255, 242);
+        }
+
+        .shape {
+            width: 200px;
+            height: 200px;
+            margin: 10px auto;
+            background-color: #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .plane {
+            width: 50px;
+            height: 50px;
+            display: inline-block;
+            margin: 5px;
+            cursor: pointer;
+        }
+
+        .circle2 {
+            border-radius: 50%;
+            background-color: rgb(255, 196, 0);
+        }
+
+        .square2 {
+            background-color: red;
+        }
+
+        .triangle2 {
+            width: 0;
+            height: 0;
+            border-left: 25px solid transparent;
+            border-right: 25px solid transparent;
+            border-bottom: 50px solid green;
+        }
+
+        .selected {
+            border: 3px solid red;
+        }
+
+        .sub-shape.selected {
+            transform: scale(0.1);
+        }
+
+
+        .selected2 {
+            border: 3px solid rgb(255, 0, 200);
+        }
+    </style>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+
+<body>
+    <div class="instructions">
+        <h2>裏 - 仕様</h2>
+        <ol>
+            <li>ランダムに飛ばされたプレイヤーは平面図の図形を所持している</li>
+            <li>裏のプレイヤーは自分の図形以外を所持しなくてはならない</li>
+            <li>細かい仕様は各自で補足説明して下さい</li>
+            <li>背景が水色になったら完成です</li>
+        </ol>
+        <h3>使い方</h3>
+        <ul>
+            <li>小さな図形をクリックして送りたい先の大きな図形をクリックして下さい。</li>
+            <li>※このページを更新すると、図形の配置がランダムに変更されます。</li>
+            <li>※この説明欄はクリックしたら非表示にできます</li>
+        </ul>
+    </div>
+    <div class="game-container">
+        <div id="area-left" class="area">
+            <div class="main-shape"></div>
+            <div class="sub-shapes"></div>
+        </div>
+        <div id="area-center" class="area">
+            <div class="main-shape"></div>
+            <div class="sub-shapes"></div>
+        </div>
+        <div id="area-right" class="area">
+            <div class="main-shape"></div>
+            <div class="sub-shapes"></div>
+        </div>
+    </div>
+
+    <div class="instructions">
+        <h2>表 - 使い方</h2>
+        <div class="content">
+            <ul>
+                <li>１つ目クリックと２つ目クリックした図形が入れ替わります。</li>
+                <li>※平面図の図形をクリックして別エリアの図形をクリックして下さい。</li>
+
+                <li>本番でも１つずつ動かしてね</li>
+                <li>細かい仕様は各自で補足説明して下さい</li>
+                <li>※クリックしたら非表示にできます</li>
+
+                <li>裏の所持している図形に合わせてそれ以外の図形で3D図を作ってね</li>
+                <li>例：裏が□、△、〇　＝　表は〇△、□〇、△□の3D図を作る</li>
+
+                <li>3D図形を裏と同じ色にしてね。それが表の正解だよ</li>
+                <li>※この説明欄はクリックしたら非表示にできます</li>
+            </ul>
+        </div>
+    </div>
+    <div class="container" id="shapes2"></div>
+    <div class="container" id="planes"></div>
+
+    <script>
+        document.querySelectorAll('.instructions').forEach(instruction => {
+            instruction.addEventListener('click', () => {
+                instruction.style.display = 'none';
+            });
+        });
+
+        const shapes = ['circle', 'square', 'triangle'];
+        const areas = ['left', 'center', 'right'];
+        let selectedShape = null;
+
+        function getRandomMainShapes() {
+            const shuffled = shapes.sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, 3);
+        }
+
+        function getRandomSubShapes() {
+            const subShapes = [];
+            const shapeCounts = { circle: 0, square: 0, triangle: 0 };
+
+            for (let i = 0; i < 3; i++) {
+                const areaShapes = [];
+                while (areaShapes.length < 2) {
+                    const shape = shapes[Math.floor(Math.random() * shapes.length)];
+                    if (shapeCounts[shape] < 2) {
+                        areaShapes.push(shape);
+                        shapeCounts[shape]++;
+                    }
+                }
+                subShapes.push(areaShapes);
+            }
+
+            return subShapes;
+        }
+
+        function selectShape(shape, area) {
+            if (selectedShape) {
+                selectedShape.classList.remove('selected');
+            }
+            selectedShape = shape;
+            shape.classList.add('selected');
+        }
+
+        function initializeGame() {
+            const mainShapes = getRandomMainShapes();
+            const subShapes = getRandomSubShapes();
+
+            areas.forEach((area, index) => {
+                const mainShapeElement = document.querySelector(`#area-${area} .main-shape`);
+                mainShapeElement.className = `main-shape ${mainShapes[index]}`;
+
+                const subShapesElement = document.querySelector(`#area-${area} .sub-shapes`);
+                subShapesElement.innerHTML = '';
+                subShapes[index].forEach(shape => {
+                    const subShape = document.createElement('div');
+                    subShape.className = `sub-shape ${shape}`;
+                    subShape.addEventListener('click', () => selectShape(subShape, area));
+                    subShapesElement.appendChild(subShape);
+                });
+            });
+
+            document.querySelectorAll('.main-shape').forEach(shape => {
+                shape.addEventListener('click', () => moveSelectedShape(shape.parentElement.id.split('-')[1]));
+            });
+
+            checkAllAreas();
+        }
+
+        function moveSelectedShape(targetArea) {
+            if (!selectedShape) return;
+
+            const sourceArea = selectedShape.parentElement.parentElement.id.split('-')[1];
+            if (sourceArea === targetArea) return;
+
+            const targetSubShapes = document.querySelector(`#area-${targetArea} .sub-shapes`);
+            if (targetSubShapes.children.length >= 6) return;
+
+            selectedShape.classList.remove('selected');
+            targetSubShapes.appendChild(selectedShape);
+            selectedShape = null;
+
+            checkAllAreas();
+        }
+
+        function checkAllAreas() {
+            areas.forEach(area => {
+                checkArea(area);
+            });
+        }
+
+        function checkArea(area) {
+            const areaElement = document.getElementById(`area-${area}`);
+            const mainShape = areaElement.querySelector('.main-shape').className.split(' ')[1];
+            const subShapes = Array.from(areaElement.querySelectorAll('.sub-shape')).map(el => el.className.split(' ')[1]);
+
+            const allShapes = [mainShape, ...subShapes];
+            const uniqueShapes = new Set(allShapes);
+            const uniqueSubShapes = new Set(subShapes);
+
+            if (uniqueShapes.size === allShapes.length && uniqueSubShapes.size === 2) {
+                areaElement.classList.add('highlight');
+            } else {
+                areaElement.classList.remove('highlight');
+            }
+        }
+
+        initializeGame();
+
+
+
+
+
+
+        const shapes2 = ['球体', '三角錐', '四角柱', '円柱', '円錐', '四角錐'];
+        const planeTypes = ['circle2', 'square2', 'triangle2'];
+        const shapePatterns = {
+            'circle2,circle2': '球体',
+            'circle2,square2': '円柱',
+            'circle2,triangle2': '円錐',
+            'square2,circle2': '円柱',
+            'square2,square2': '四角柱',
+            'square2,triangle2': '四角錐',
+            'triangle2,circle2': '円錐',
+            'triangle2,square2': '四角錐',
+            'triangle2,triangle2': '三角錐'
+        };
+
+        let currentPlanes = [];
+        let selectedPlane = null;
+        let lastSelectedArea = null;
+        let clickCount = 0;
+
+        function initializePlanes() {
+            currentPlanes = [];
+            const planeCount = { circle2: 0, square2: 0, triangle2: 0 };
+
+            for (let i = 0; i < 6; i++) {
+                let randomPlane;
+                do {
+                    randomPlane = planeTypes[Math.floor(Math.random() * 3)];
+                } while (planeCount[randomPlane] >= 2);
+
+                currentPlanes.push(randomPlane);
+                planeCount[randomPlane]++;
+            }
+
+            renderPlanes();
+            renderShapes();
+        }
+
+        function renderPlanes() {
+            const planesContainer = document.getElementById('planes');
+            planesContainer.innerHTML = '';
+
+            for (let i = 0; i < 3; i++) {
+                const area = document.createElement('div');
+                area.className = 'area2';
+
+                for (let j = 0; j < 2; j++) {
+                    const plane = document.createElement('div');
+                    plane.className = `plane ${currentPlanes[i * 2 + j]}`;
+                    plane.onclick = () => selectPlane(i * 2 + j);
+                    area.appendChild(plane);
+                }
+
+                planesContainer.appendChild(area);
+                checkArea2(i); // 各エリアをチェック
+            }
+        }
+
+        function renderShapes() {
+            const shapesContainer = document.getElementById('shapes2');
+            shapesContainer.innerHTML = '';
+
+            for (let i = 0; i < 3; i++) {
+                const shape = document.createElement('div');
+                shape.className = 'shape';
+                shape.textContent = shapePatterns[`${currentPlanes[i * 2]},${currentPlanes[i * 2 + 1]}`];
+                shapesContainer.appendChild(shape);
+            }
+        }
+
+        function selectPlane(index) {
+            const currentArea = Math.floor(index / 2);
+
+            if (clickCount === 0) {
+                if (currentArea === lastSelectedArea) {
+                    return;
+                }
+                selectedPlane = index;
+                document.getElementsByClassName('plane')[index].classList.add('selected');
+                clickCount++;
+            } else if (clickCount === 1) {
+                if (currentArea === Math.floor(selectedPlane / 2)) {
+                    return;
+                }
+                const temp = currentPlanes[selectedPlane];
+                currentPlanes[selectedPlane] = currentPlanes[index];
+                currentPlanes[index] = temp;
+
+                document.getElementsByClassName('plane')[selectedPlane].classList.remove('selected');
+                //lastSelectedArea = currentArea;
+                selectedPlane = null;
+                clickCount = 0;
+
+                renderPlanes();
+                renderShapes();
+
+                // 全てのエリアをチェック
+                for (let i = 0; i < 3; i++) {
+                    checkArea2(i);
+                }
+            }
+        }
+
+        const shapeColors = {
+            '球体': 0x0000ff,   // 青
+            '三角錐': 0xff00ff,  // マゼンタ
+            '四角柱': 0x00ffff,  // シアン
+            '円柱': 0x00B400,    // 緑
+            '円錐': 0xff0000,    // 赤
+            '四角錐': 0xffff00    // 黄
+        };
+
+        function createShape2(containerId, shapeType) {
+            const container = document.getElementById(containerId);
+
+            const scene = new THREE.Scene();
+            scene.background = new THREE.Color(0xcccccc); // 灰色の背景
+            const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(200, 200);
+            container.appendChild(renderer.domElement);
+
+            let geometry, material, shape;
+            const color = shapeColors[shapeType];
+
+            switch (shapeType) {
+                case '球体':
+                    geometry = new THREE.SphereGeometry(1, 32, 32);
+                    break;
+                case '三角錐':
+                    geometry = new THREE.ConeGeometry(1, 1.5, 3);
+                    break;
+                case '四角柱':
+                    geometry = new THREE.BoxGeometry(1, 1.5, 1);
+                    break;
+                case '円柱':
+                    geometry = new THREE.CylinderGeometry(0.5, 0.5, 1.5, 32);
+                    break;
+                case '円錐':
+                    geometry = new THREE.ConeGeometry(1, 1.5, 32);
+                    break;
+                case '四角錐':
+                    geometry = new THREE.ConeGeometry(1, 1.5, 4);
+                    break;
+            }
+
+            material = new THREE.MeshPhongMaterial({ color: color });
+            shape = new THREE.Mesh(geometry, material);
+            scene.add(shape);
+
+            const light = new THREE.PointLight(0xffffff, 1, 100);
+            light.position.set(0, 0, 10);
+            scene.add(light);
+
+            camera.position.z = 3;
+
+            function animate() {
+                requestAnimationFrame(animate);
+                shape.rotation.x += 0.01;
+                shape.rotation.y += 0.01;
+                renderer.render(scene, camera);
+            }
+            animate();
+        }
+
+        function renderShapes() {
+            const shapesContainer = document.getElementById('shapes2');
+            shapesContainer.innerHTML = '';
+
+            for (let i = 0; i < 3; i++) {
+                const shape = document.createElement('div');
+                shape.className = 'shape';
+                shape.id = `shape-${i}`;
+                shapesContainer.appendChild(shape);
+
+                const shapeType = shapePatterns[`${currentPlanes[i * 2]},${currentPlanes[i * 2 + 1]}`];
+                createShape2(`shape-${i}`, shapeType);
+            }
+        }
+
+        function checkArea2(area) {
+            const areaElement = document.getElementsByClassName('area2')[area];
+            const shapes = Array.from(areaElement.querySelectorAll('.shape')).map(el => el.textContent);
+            const mainShape = Array.from(areaElement.querySelectorAll('.main-shape')).map(el => el.className.split(' ')[1]);
+
+            // 条件2: △＝円柱、□＝円錐、〇＝四角錐の場合
+            const isSpecialPattern =
+                (mainShape[0] === 'triangle' && shapes[0] === '円柱') &&
+                (mainShape[1] === 'square' && shapes[0] === '円錐') &&
+                (mainShape[2] === 'circle' && shapes[0] === '四角錐');
+
+            if (isSpecialPattern) {
+                areaElement.style.backgroundColor = 'yellow';
+            } else {
+                areaElement.style.backgroundColor = '';
+            }
+        }
+
+
+        initializePlanes();
+    </script>
+</body>
+
+</html>
